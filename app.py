@@ -1,3 +1,11 @@
+@app.route("/webhook", methods=["GET"])
+def verify():
+    token = request.args.get("hub.verify_token")
+    challenge = request.args.get("hub.challenge")
+    if token == "mitoken123":
+        return challenge
+    return "Token inválido", 403
+
 from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
 
