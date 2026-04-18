@@ -1,3 +1,10 @@
+from flask import Flask, request
+from twilio.twiml.messaging_response import MessagingResponse
+
+app = Flask(__name__)
+
+sesiones = {}
+
 @app.route("/webhook", methods=["GET"])
 def verify():
     token = request.args.get("hub.verify_token")
@@ -5,14 +12,6 @@ def verify():
     if token == "mitoken123":
         return challenge
     return "Token inválido", 403
-
-from flask import Flask, request
-from twilio.twiml.messaging_response import MessagingResponse
-
-app = Flask(__name__)
-
-# Diccionario para recordar en qué paso está cada cliente
-sesiones = {}
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
@@ -22,7 +21,6 @@ def webhook():
     resp = MessagingResponse()
     msg = resp.message()
     
-    # Obtener el paso actual del cliente
     paso = sesiones.get(numero, 0)
     
     if paso == 0:
@@ -35,8 +33,8 @@ def webhook():
         msg.body("¡Perfecto! Hemos recibido tus datos. En breve te daremos la información sobre los planes.")
         sesiones[numero] = 3
     elif paso == 3:
-    	return str(resp)
-
+        return str(resp)
+    
     return str(resp)
 
 if __name__ == "__main__":
